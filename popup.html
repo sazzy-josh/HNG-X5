@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Open+Sans:wght@300;400;500;600&family=Sora:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <title>Screen recorder</title>
+  </head>
+  <body>
+    <div class="content">
+      <div class="header">
+        <span class="header_logo">
+          <img src="/assets/logo.png" alt="help-me-out" class="logo_img" />
+
+          <p class="text_help">HelpMeOut</p>
+        </span>
+
+        <div class="cta_btns">
+          <img src="/assets/setting.svg" alt="setting" />
+          <img src="/assets//close.svg" alt="close" />
+        </div>
+      </div>
+
+      <p class="content_text">
+        This extension helps you record and share help videos with ease.
+      </p>
+
+      <div class="features">
+        <div class="inner_feature">
+          <div style="text-align: center">
+            <img src="/assets/monitor.svg" alt="monitor" class="" />
+            <p class="text-fullscreen">Full screen</p>
+          </div>
+
+          <div style="text-align: center">
+            <img src="/assets/tabs.svg" alt="tabs" />
+            <p>Current Tab</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="audio_check">
+        <div class="d-flex">
+          <img src="/assets/video.svg" alt="record" />
+
+          <p class="aud">Camera</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="audio_check mt-5">
+        <div class="d-flex">
+          <img src="/assets/record.svg" alt="record" />
+          <p class="aud">Audio</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="button_cont">
+        <button id="start_video">Start Recording</button>
+      </div>
+    </div>
+
+    <script src="./js/popup.js"></script>
+  </body>
+</html>
