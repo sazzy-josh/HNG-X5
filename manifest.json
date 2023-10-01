@@ -23,5 +23,5 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["activeTab", "tabs", "scripting"]
+  "permissions": ["activeTab", "tabs", "scripting", "storage"]
 }

@@ -1,15 +1,63 @@
+// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+//   if (changeInfo.status === "complete" && /^http/.test(tab.url)) {
+//     chrome.scripting
+//       .executeScript({
+//         target: {tabId},
+//         files: ["./content.js"],
+//       })
+//       .then(() => {
+//         console.log("script injected");
+//       })
+//       .catch((err) => {
+//         console.log(err, "error in background");
+//       });
+//   }
+// });
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && /^http/.test(tab.url)) {
-    chrome.scripting
-      .executeScript({
+    chrome.scripting.executeScript(
+      {
         target: {tabId},
-        files: ["./content.js"],
-      })
-      .then(() => {
+        func: injectScript,
+      },
+      () => {
         console.log("script injected");
-      })
-      .catch((err) => {
-        console.log(err, "error in background");
-      });
+      },
+    );
   }
 });
+
+function injectScript() {
+  // Check if the script has been injected before
+  chrome.storage.local.get("injected", ({injected}) => {
+    if (!injected) {
+      // Inject the script
+      chrome.scripting
+        .insertCSS({
+          target: {tabId: chrome.devtools.inspectedWindow.tabId},
+          files: ["./styles.css"],
+        })
+        .then(() => {
+          console.log("CSS injected");
+        })
+        .catch((err) => {
+          console.error(err, "error injecting CSS");
+        });
+
+      chrome.scripting
+        .executeScript({
+          target: {tabId: chrome.devtools.inspectedWindow.tabId},
+          files: ["./content.js"],
+        })
+        .then(() => {
+          console.log("script injected");
+          // Mark script as injected
+          chrome.storage.local.set({injected: true});
+        })
+        .catch((err) => {
+          console.error(err, "error injecting script");
+        });
+    }
+  });
+}
