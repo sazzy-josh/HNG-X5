@@ -1,47 +1,56 @@
-console.log("Hi, I have been injected whoopie!!!");
+console.log("Hi, I have been injected this motherfucker!!!");
+
+// random id generator
+let randomId = (len = 10) => {
+  let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij012345678".split("");
+  let id = "";
+  for (let i = 0; i < len; i++) {
+    const rand = Math.floor(Math.random() * char.length);
+    id += char[rand];
+  }
+  return id;
+};
 
 var recorder = null;
 var chunks = [];
+var hmo_streamVideoId = randomId();
+var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
 
-async function sendBase64ToEndpoint(base64data) {
+// Streams handler
+async function endStream(videoId) {
   try {
-    const response = await fetch("https://example.com/your-endpoint", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({base64data}),
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const responseData = await response.json();
-    setTimeout(() => {
-      window.open("url-to-my-landing-page", "_blank");
-    }, 2000);
-    console.log("Response from server:", responseData);
-  } catch (error) {
-    console.error("Error sending base64 data:", error);
+    const url = `${API_BASE_URL}/stream/end/${videoId}`;
+    const req = await fetch(url);
+    const res = await req.json();
+  } catch (e) {
+    console.log(`Something went wrong: ${e.message}`);
+    window.alert(res?.message);
   }
 }
 
-//generates Chunks of data && sends data to BE
-function sendChunksToBackend() {
-  if (chunks.length > 0) {
-    var reader = new FileReader();
-    reader.onloadend = function () {
-      var base64data = reader.result.split(",")[1];
-      console.log("Sending chunk to backend:", base64data);
+async function streamChunksToServer(chunk) {
+  if (chunk.length > 0) {
+    const videoBlob = new Blob(chunks, {
+      type: chunk[0]?.type,
+    });
+    const formData = new FormData();
+    formData.append("blob", videoBlob);
+    formData.append("videoId", hmo_streamVideoId);
 
-      // Send the base64 data to the endpoint
-      sendBase64ToEndpoint(base64data);
-
-      // Clear chunks after sending
-      chunks = [];
-    };
-    reader.readAsDataURL(new Blob(chunks));
+    try {
+      // Send the FormData in a POST request
+      const url = `${API_BASE_URL}/video/stream`;
+      const req = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      const result = await req.json();
+      console.log(`Stream response: ${result?.message}`);
+    } catch (e) {
+      console.error(`Something went wrong Streaming: ${e?.message}`);
+    }
+  } else {
+    console.info(`Streaming chunk is empty.`);
   }
 }
 
@@ -50,37 +59,26 @@ function onAccessApproved(stream) {
 
   recorder.start();
 
-  recorder.onstop = function () {
+  recorder.onstop = async function () {
     stream.getTracks().forEach(function (track) {
       if (track.readyState === "live") {
         track.stop();
       }
     });
     // Send the chunks to the backend
-    sendChunksToBackend();
+    await endStream(hmo_streamVideoId);
+    window.open("https://www.bentoafrica.com", "_blank");
   };
 
-  recorder.ondataavailable = function (event) {
+  recorder.ondataavailable = async function (event) {
     console.log(event);
     if (event.data.size > 0) {
       chunks.push(event.data);
     }
-    // let recordedBlob = event.data;
-    // let url = URL.createObjectURL(recordedBlob);
-    // console.log(url);
-
-    // let a = document.createElement("a");
-
-    // a.style.display = "none";
-    // a.href = url;
-    // a.download = "screen-recording.webm";
-
-    // document.body.appendChild(a);
-    // a.click();
-
-    // document.body.removeChild(a);
-
-    // URL.revokeObjectURL(url);
+    // stream to backend
+    const chunk = [event.data];
+    await streamChunksToServer(chunk);
+    console.log({chunks}, "chunks");
   };
 }
 
@@ -94,8 +92,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .getDisplayMedia({
         audio: true,
         video: {
-          width: 9999999999,
-          height: 9999999999,
+          width: 1280,
+          height: 720,
         },
       })
       .then((stream) => {
