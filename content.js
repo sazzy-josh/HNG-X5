@@ -14,7 +14,7 @@ let randomId = (len = 10) => {
 var recorder = null;
 var chunks = [];
 var videoId = randomId();
-var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
+var API_BASE_URL = `https://chrome-extension-vgf6.onrender.com/api`;
 
 async function streamChunksToServer(chunk) {
   if (chunk.length > 0) {
@@ -27,16 +27,16 @@ async function streamChunksToServer(chunk) {
 
     try {
       // Send the FormData in a POST request
-      const url = `${API_BASE_URL}/video/stream`;
+      const url = `${API_BASE_URL}/addVideo`;
       const req = await fetch(url, {
         method: "POST",
         body: formData,
       });
       const result = await req.json();
-      if (req.ok) {
+      if (req.ok || !req.ok) {
         setTimeout(() => {
-          window.open("https://www.bentoafrica.com", "_blank");
-        }, 2000);
+          window.open("https://help-me-web.netlify.app", "_blank");
+        }, 3000);
       }
       console.log(`Stream response: ${result?.message}`);
     } catch (e) {
