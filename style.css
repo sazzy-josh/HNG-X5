@@ -11,7 +11,7 @@ body {
 
 .content {
   min-width: 300px;
-  height: 439px;
+  height: auto;
   border-radius: 24px;
   padding: 14px 10px !important;
   background: #fff;
@@ -76,13 +76,24 @@ img {
   display: flex;
   align-items: center;
 }
+
+.button_cont {
+}
+
 .button_cont button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: teal;
-  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 8px;
+  color: #fff;
   cursor: pointer;
+  align-self: stretch;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  background: #120b48;
 }
 
 .button_cont button:hover {
