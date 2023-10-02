@@ -13,20 +13,8 @@ let randomId = (len = 10) => {
 
 var recorder = null;
 var chunks = [];
-var hmo_streamVideoId = randomId();
+var videoId = randomId();
 var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
-
-// Streams handler
-async function endStream(videoId) {
-  try {
-    const url = `${API_BASE_URL}/stream/end/${videoId}`;
-    const req = await fetch(url);
-    const res = await req.json();
-  } catch (e) {
-    console.log(`Something went wrong: ${e.message}`);
-    window.alert(res?.message);
-  }
-}
 
 async function streamChunksToServer(chunk) {
   if (chunk.length > 0) {
@@ -35,7 +23,7 @@ async function streamChunksToServer(chunk) {
     });
     const formData = new FormData();
     formData.append("blob", videoBlob);
-    formData.append("videoId", hmo_streamVideoId);
+    formData.append("videoId", videoId);
 
     try {
       // Send the FormData in a POST request
@@ -45,6 +33,11 @@ async function streamChunksToServer(chunk) {
         body: formData,
       });
       const result = await req.json();
+      if (req.ok) {
+        setTimeout(() => {
+          window.open("https://www.bentoafrica.com", "_blank");
+        }, 2000);
+      }
       console.log(`Stream response: ${result?.message}`);
     } catch (e) {
       console.error(`Something went wrong Streaming: ${e?.message}`);
@@ -66,8 +59,7 @@ function onAccessApproved(stream) {
       }
     });
     // Send the chunks to the backend
-    await endStream(hmo_streamVideoId);
-    window.open("https://www.bentoafrica.com", "_blank");
+    await streamChunksToServer();
   };
 
   recorder.ondataavailable = async function (event) {
@@ -78,7 +70,7 @@ function onAccessApproved(stream) {
     // stream to backend
     const chunk = [event.data];
     await streamChunksToServer(chunk);
-    console.log({chunks}, "chunks");
+    console.log({chunk}, "chunks");
   };
 }
 
