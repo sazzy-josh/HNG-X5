@@ -33,15 +33,7 @@ async function streamChunksToServer(chunk) {
         body: formData,
       });
       const result = await req.json();
-      if (!req.ok) {
-        setTimeout(() => {
-          window.open("https://help-me-web.netlify.app", "_blank");
-        }, 2000);
-        throw new Error("Ooops!Smth went wrong");
-      }
-      setTimeout(() => {
-        window.open("https://help-me-web.netlify.app/file", "_blank");
-      }, 2000);
+
       console.log(`Stream response: ${result?.message}`);
     } catch (e) {
       console.error(`Something went wrong Streaming: ${e?.message}`);
@@ -74,6 +66,7 @@ function onAccessApproved(stream) {
     // stream to backend
     const chunk = [event.data];
     await streamChunksToServer(chunk);
+    window.open("https://help-me-web.netlify.app", "_blank");
     console.log({chunk}, "chunks");
   };
 }
